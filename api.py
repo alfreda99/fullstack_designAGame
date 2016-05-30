@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-`
 
 import random
-import logging
 from datetime import datetime
 
 import endpoints
@@ -9,9 +8,6 @@ import endpoints
 from protorpc import messages
 from protorpc import message_types
 from protorpc import remote
-
-from google.appengine.api import memcache
-from google.appengine.ext import ndb
 
 from models import User, Game, Score, Transaction
 from models import StringMessage, NewGameForm, GameForm, MakeGuessForm,\
@@ -39,6 +35,7 @@ STICK_MAN_PARTS = ['left_leg', 'right_leg', 'left_arm', 'right_arm', 'body',
 @endpoints.api(name='hang_man', version='v1')
 class HangManApi(remote.Service):
     """Game API"""
+
     @endpoints.method(request_message=USER_REQUEST,
                       response_message=StringMessage,
                       path='user',
@@ -95,20 +92,28 @@ class HangManApi(remote.Service):
 
     @endpoints.method(request_message=MAKE_GUESS_REQUEST,
                       response_message=GameForm,
-                      path='game/{urlsafe_game_key}',
+                      path='game/guess/{urlsafe_game_key}',
                       name='make_guess',
                       http_method='PUT')
     def make_guess(self, request):
         """Guess a letter. Returns a game state with message"""
         game = get_by_urlsafe(request.urlsafe_game_key, Game)
+
         if game.game_over:
-            return game.to_form('Game already over!')
+            raise endpoints.BadRequestException(
+                    'Game already over!')
 
         if game.game_cancelled:
-            return game.to_form('Game has been cancelled!')
+            raise endpoints.BadRequestException(
+                    'Game has been cancelled!')
 
         if len(request.guess) > 1:
-            return game.to_form('You can only guess one letter!')
+            raise endpoints.BadRequestException(
+                    'You can only guess one letter!')
+
+        if not request.guess.isalpha():
+            raise endpoints.BadRequestException(
+                    'The guess must be a letter!')
 
         # Determine if guess is correct.  If so, update score
         score = Score.query(ancestor=game.key).get()
@@ -184,21 +189,21 @@ class HangManApi(remote.Service):
             raise endpoints.NotFoundException(
                     'A User with that name does not exist!')
         games = Game.query(ancestor=user.key)
-        games = games.filter(Game.game_over is False)
-        games = games.filter(Game.game_cancelled is not True)
+        games = games.filter(Game.game_over == False)
+        games = games.filter(Game.game_cancelled != True)
 
         return GameForms(games=[game.to_form('') for game in games])
 
     @endpoints.method(request_message=GET_GAME_REQUEST,
                       response_message=StringMessage,
-                      path='game/{urlsafe_game_key}',
+                      path='game/cancel/{urlsafe_game_key}',
                       name='cancel_game',
-                      http_method='DELETE')
+                      http_method='PUT')
     def cancel_game(self, request):
         """Cancels a game."""
         game = get_by_urlsafe(request.urlsafe_game_key, Game)
         if game.game_over:
-            return StringMessage('Game already over!')
+            raise endpoints.BadRequestException('Game already over!')
 
         game.game_cancelled = True
         game.put()

@@ -1,13 +1,14 @@
-#Full Stack Nanodegree Project 4
+# Full Stack Nanodegree Project 4
 
-##Game Description:
+## Game Description:
 Hangman is a simple guessing game where a random word is picked and the user
 guesses one letter at at time until they have guessed all the letters that spell
-the word. If they guess a letter that is not in the word, they will build the body
-of a stick "hangman".  The stick man has 6 body parts and thus the user has 6 times to
-to guess a wrong letter before the hangman is completely constructed.  If the
-hangman is built, the user will have lost the game and the game will end. If all
-the letters of the word are guessed, the user wins.
+the word. If the guess is in the game word, the correct guesses is updated, the
+score is incremented by 1.  If the word is completely guessed correctly the score is incremented by 30.  If they guess a letter that is not in the word, they will build
+the body of a stick "hangman".  The stick man has 6 body parts and thus the user
+has 6 times to guess a wrong letter before the hangman is completely constructed.
+If the hangman is built, the user will have lost the game and the game will end.
+If all the letters of the word are guessed, the user wins.
 'Guesses' are sent to the `make_guess` endpoint which will reply
 with either: 'You guessed right. The game word does contain the letter',
 'Sorry, the game word does not contain the letter', 'you win'(if the work is correctly
@@ -16,7 +17,7 @@ IT is a single player game.  Many different games can be played by many differen
 Users at any given time. Each game can be retrieved or played by using the path
 parameter `urlsafe_game_key`.
 
-##Files Included:
+## Files Included:
  - api.py: Contains endpoints and game playing logic.
  - app.yaml: App configuration.
  - cron.yaml: Cronjob configuration.
@@ -24,7 +25,7 @@ parameter `urlsafe_game_key`.
  - models.py: Entity and message definitions including helper methods.
  - utils.py: Helper function for retrieving ndb.Models by urlsafe Key string.
 
-##Endpoints Included:
+## Endpoints Included:
  - **create_user**
     - Path: 'user'
     - Method: POST
@@ -50,7 +51,7 @@ parameter `urlsafe_game_key`.
     - Description: Returns the current state of a game.
 
  - **make_guess**
-    - Path: 'game/{urlsafe_game_key}'
+    - Path: 'game/guess/{urlsafe_game_key}'
     - Method: PUT
     - Parameters: urlsafe_game_key, guess
     - Returns: GameForm with new game state.
@@ -89,8 +90,8 @@ parameter `urlsafe_game_key`.
     Will raise a NotFoundException if the User does not exist.
 
 - **cancel_game**
-    - Path: 'game/{urlsafe_game_key}'
-    - Method: DELETE
+    - Path: 'game/cancel/{urlsafe_game_key}'
+    - Method: PUT
     - Parameters: urlsafe_game_key
     - Returns: Message confirming game cancellation.
     - Description: Cancels a game.
@@ -122,7 +123,7 @@ parameter `urlsafe_game_key`.
     ordered by transaction date/time.
 
 
-##Models Included:
+## Models Included:
  - **User**
     - Stores unique user_name, (optional) email address, and ranking.
 
@@ -136,7 +137,7 @@ parameter `urlsafe_game_key`.
     - Stores the transaction of each guess. Associated with Game
     model via KeyProperty.
 
-##Forms Included:
+## Forms Included:
  - **GameForm**
     - Representation of a Game's state (urlsafe_key, user_name, gameX_word,
     correct_guesses, lame_guesses, attempts_remaining, hangman, game_ove,

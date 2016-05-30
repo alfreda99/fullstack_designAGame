@@ -1,0 +1,29 @@
+# Design Decisions:
+## What additional properties did you add to your models and why?
+- **User**
+    - I added a rankings property in order to maintain the ranking of each user.
+    - I added to_form function to display the output reprensentation of the user
+- **Transaction**
+    - I added a new Transaction entity to maintain the transanctions.  I thought
+    it would be better to store this information in a seperate entity than store
+    it in the gameitself.
+    - I added to_form function to display the output reprensentation of the
+    Transaction
+- **Game**
+    - I user property and made Game a child of User because I thought that better
+    represented th relationship between user and game.
+    - I added other properties, incorrect_guesses, correct_guesses, hangman and
+    game_cancelled to store information needed for the game state.
+- **Score**
+    - I added a points propery to keep track of the points during the game.  I
+    decided to update the score during the game and not just when it was finished.
+    - I made Score a child of game as I thought it better represented the
+    relationship and it made it easier to get a individual user's scores.
+    - I added to_form function to display the output reprensentation of the Score
+
+## What were some of the trade-offs or struggles you faced when implementing the new game logic
+- Developing the game logic was easy.  It took a little time to figure how to use the
+Python constructs to achieve the results I needed.  Stackoverflow helped with that.  The most difficult part has been the environment and debugging.  I could not get the AppEngine
+API viewer to work locally, so I had to deploy to server each time.  This was very time
+consuming.  And the servers were slow.  The errors were slow to display.  And the Entity
+data was slow to refresh.
